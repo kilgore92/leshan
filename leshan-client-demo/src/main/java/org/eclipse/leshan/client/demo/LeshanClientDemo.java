@@ -46,9 +46,12 @@ public class LeshanClientDemo {
     private static final Logger LOG = LoggerFactory.getLogger(LeshanClientDemo.class);
     private static final int OBJECT_ID_TEMPERATURE_SENSOR = 3303;
     private final static String DEFAULT_ENDPOINT = "LeshanClientDemo";
+    // Create Object ID for Light
+    private final static int LIGHT_ID = 10250;
     private final static String USAGE = "java -jar leshan-client-demo.jar [OPTION]";
 
     private static MyLocation locationInstance;
+    
 
     public static void main(final String[] args) {
 
@@ -203,12 +206,14 @@ public class LeshanClientDemo {
 
         // Initialize object list
         ObjectsInitializer initializer = new ObjectsInitializer();
-        if (needBootstrap) {
+        
+       if (needBootstrap) {
             if (pskIdentity == null)
                 initializer.setInstancesForObject(SECURITY, noSecBootstap(serverURI));
             else
                 initializer.setInstancesForObject(SECURITY, pskBootstrap(serverURI, pskIdentity, pskKey));
-        } else {
+        }
+       else {
             if (pskIdentity == null) {
                 initializer.setInstancesForObject(SECURITY, noSec(serverURI, 123));
                 initializer.setInstancesForObject(SERVER, new Server(123, 30, BindingMode.U, false));
@@ -217,10 +222,12 @@ public class LeshanClientDemo {
                 initializer.setInstancesForObject(SERVER, new Server(123, 30, BindingMode.U, false));
             }
         }
+       
         initializer.setClassForObject(DEVICE, MyDevice.class);
         initializer.setInstancesForObject(LOCATION, locationInstance);
         initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new RandomTemperatureSensor());
-        List<LwM2mObjectEnabler> enablers = initializer.create(SECURITY, SERVER, DEVICE, LOCATION, OBJECT_ID_TEMPERATURE_SENSOR);
+        initializer.setInstancesForObject(LIGHT_ID, new MyLight());
+        List<LwM2mObjectEnabler> enablers = initializer.create(SECURITY,SERVER, DEVICE, LOCATION, OBJECT_ID_TEMPERATURE_SENSOR,LIGHT_ID);
 
         // Create client
         LeshanClientBuilder builder = new LeshanClientBuilder(endpoint);

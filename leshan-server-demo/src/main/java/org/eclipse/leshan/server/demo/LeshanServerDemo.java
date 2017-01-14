@@ -111,6 +111,7 @@ public class LeshanServerDemo {
 
         // get local address
         String localAddress = System.getenv("COAPHOST");
+        //localAddress = "192.168.1.136"; // IP address of laptop - Ishaan. REMOVE.
         if (cl.hasOption("lh")) {
             localAddress = cl.getOptionValue("lh");
         }
