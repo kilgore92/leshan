@@ -22,7 +22,13 @@ import org.slf4j.LoggerFactory;
 public class MyLight extends BaseInstanceEnabler {
 
     private static final Logger LOG = LoggerFactory.getLogger(MyDevice.class);
-
+    
+    private int groupID = -1; // Initialize via a set statement
+    private String roomID = "0"; // Initial value
+    private String behavior = "broker";
+    private float XLocation = (float) -1.0;
+    private float YLocation = (float) -1.0;
+    
     public MyLight() {
         // notify new date each 5 second
         Timer timer = new Timer();
@@ -50,7 +56,18 @@ public class MyLight extends BaseInstanceEnabler {
             return ReadResponse.success(resourceid, getUserId());
         case 5:
             return ReadResponse.success(resourceid, getLightColor());
-        
+        case 6:
+            return ReadResponse.success(resourceid, getLightStatus());
+        case 7:
+        	return ReadResponse.success(resourceid, getGroup());
+        case 8:
+        	return ReadResponse.success(resourceid, getLocationX());
+        case 9:
+        	return ReadResponse.success(resourceid, getLocationY());
+        case 10:
+        	return ReadResponse.success(resourceid, getRoomID());
+        case 11:
+        	return ReadResponse.success(resourceid, getBehavior());
         default:
             return super.read(resourceid);
         }
@@ -96,6 +113,30 @@ public class MyLight extends BaseInstanceEnabler {
 
     private String getLightColor() {
     	return "(r,g,b) tuple";
+    }
+    
+    private boolean getLightStatus(){
+    	return true;
+    }
+    
+    private int getGroup() {
+    	return groupID;
+    }
+    
+    private float getLocationX() {
+    	return XLocation;
+    }
+    
+    private float getLocationY() {
+    	return YLocation;
+    }
+    
+    private String getRoomID() {
+    	return roomID;
+    }
+    
+    private String getBehavior() {
+    	return behavior;
     }
 
 }

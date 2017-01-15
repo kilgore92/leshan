@@ -223,11 +223,11 @@ public class LeshanClientDemo {
             }
         }
        
-        initializer.setClassForObject(DEVICE, MyDevice.class);
+        //initializer.setClassForObject(DEVICE, MyDevice.class);
         initializer.setInstancesForObject(LOCATION, locationInstance);
-        initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new RandomTemperatureSensor());
+        //initializer.setInstancesForObject(OBJECT_ID_TEMPERATURE_SENSOR, new RandomTemperatureSensor());
         initializer.setInstancesForObject(LIGHT_ID, new MyLight());
-        List<LwM2mObjectEnabler> enablers = initializer.create(SECURITY,SERVER, DEVICE, LOCATION, OBJECT_ID_TEMPERATURE_SENSOR,LIGHT_ID);
+        List<LwM2mObjectEnabler> enablers = initializer.create(SECURITY,SERVER,LOCATION,LIGHT_ID);
 
         // Create client
         LeshanClientBuilder builder = new LeshanClientBuilder(endpoint);
