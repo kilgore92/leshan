@@ -21,13 +21,14 @@ import org.slf4j.LoggerFactory;
 
 public class MyLight extends BaseInstanceEnabler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MyDevice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MyLight.class);
     
     private int groupID = -1; // Initialize via a set statement
     private String roomID = "0"; // Initial value
     private String behavior = "broker";
-    private float XLocation = (float) -1.0;
-    private float YLocation = (float) -1.0;
+    private double XLocation = -1.0;
+    private double YLocation = -1.0;
+    private String RGB;
     
     public MyLight() {
         // notify new date each 5 second
@@ -55,7 +56,7 @@ public class MyLight extends BaseInstanceEnabler {
         case 4:
             return ReadResponse.success(resourceid, getUserId());
         case 5:
-            return ReadResponse.success(resourceid, getLightColor());
+            return ReadResponse.success(resourceid, getRGB());
         case 6:
             return ReadResponse.success(resourceid, getLightStatus());
         case 7:
@@ -85,12 +86,29 @@ public class MyLight extends BaseInstanceEnabler {
     public WriteResponse write(int resourceid, LwM2mResource value) {
         LOG.info("Write on Device Resource " + resourceid + " value " + value);
         switch (resourceid) {
-        // Implement writes later
+        case 8:
+        	setLocationX((double) value.getValue());
+        	return WriteResponse.success();
+        case 9:
+        	setLocationY((double) value.getValue());
+        	return WriteResponse.success();
+        case 5:
+        	boolean success = setRGB((String) value.getValue());
+        	if (success) {
+        		LOG.info("Write to SenseHat successful \n");
+        		return WriteResponse.success();
+        	}
+        	else {
+        		LOG.info("SenseHat process cannot be found \n");
+        		return WriteResponse.notFound();
+        	}
+        		
         default:
             return super.write(resourceid, value);
         }
     }
 
+    // Getter Functions
     private String getLightId() {
         return "Not implemented yet, Id = 0";
     }
@@ -111,8 +129,8 @@ public class MyLight extends BaseInstanceEnabler {
         return "Return ID of User";
     }
 
-    private String getLightColor() {
-    	return "(r,g,b) tuple";
+    private String getRGB() {
+    	return RGB;
     }
     
     private boolean getLightStatus(){
@@ -123,11 +141,11 @@ public class MyLight extends BaseInstanceEnabler {
     	return groupID;
     }
     
-    private float getLocationX() {
+    private double getLocationX() {
     	return XLocation;
     }
     
-    private float getLocationY() {
+    private double getLocationY() {
     	return YLocation;
     }
     
@@ -138,5 +156,27 @@ public class MyLight extends BaseInstanceEnabler {
     private String getBehavior() {
     	return behavior;
     }
-
+    
+    // Setter functions
+    private void setLocationX(double new_x) {
+    	XLocation = new_x;
+    }
+    
+    private void setLocationY(double new_y) {
+    	YLocation = new_y;
+    }
+    
+    private boolean setRGB(String new_RGB) {
+    	RGB = new_RGB;
+    	// Write the value to the sense hat process (Local TCP server)
+    	TCPClient tcpClient = new TCPClient();
+    	String command = "setrgb,"+new_RGB;
+    	
+    	boolean success = tcpClient.send(command);
+    	
+    	if (success)
+    		return true;
+    	else
+    		return false;
+    }
 }
