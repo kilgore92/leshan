@@ -19,6 +19,7 @@ import org.eclipse.leshan.core.response.WriteResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("unused")
 public class MyLight extends BaseInstanceEnabler {
 
     private static final Logger LOG = LoggerFactory.getLogger(MyLight.class);
@@ -29,8 +30,11 @@ public class MyLight extends BaseInstanceEnabler {
     private double YLocation = -1.0;
     private String RGB; // Used to pass color settings to RasPi
     private String Behavior = "Broker"; // Determines behavior (programmed via setter method by broker)
+    private TCPListener tcpServer;
     
     public MyLight() {
+    	tcpServer = new TCPListener(this);
+    	tcpServer.start();
         // notify new date each 5 second
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
