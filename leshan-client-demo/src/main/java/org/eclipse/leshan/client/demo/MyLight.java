@@ -25,10 +25,10 @@ public class MyLight extends BaseInstanceEnabler {
     
     private int groupID = -1; // Initialize via a set statement
     private String roomID = "0"; // Initial value
-    private String behavior = "broker";
     private double XLocation = -1.0;
     private double YLocation = -1.0;
-    private String RGB;
+    private String RGB; // Used to pass color settings to RasPi
+    private String Behavior = "Broker"; // Determines behavior (programmed via setter method by broker)
     
     public MyLight() {
         // notify new date each 5 second
@@ -39,6 +39,8 @@ public class MyLight extends BaseInstanceEnabler {
                 fireResourcesChange(13);
             }
         }, 5000, 5000);
+        // Create a parser for the configuration JSON file here
+        // Used the parsed result to initialize all the variables (will prevent garbage returns on reads before writes)
     }
 
     @Override
@@ -102,7 +104,9 @@ public class MyLight extends BaseInstanceEnabler {
         		LOG.info("SenseHat process cannot be found \n");
         		return WriteResponse.notFound();
         	}
-        		
+        case 11:
+        	setBehavior((String)value.getValue());
+        	return WriteResponse.success();
         default:
             return super.write(resourceid, value);
         }
@@ -154,7 +158,7 @@ public class MyLight extends BaseInstanceEnabler {
     }
     
     private String getBehavior() {
-    	return behavior;
+    	return Behavior;
     }
     
     // Setter functions
@@ -178,5 +182,10 @@ public class MyLight extends BaseInstanceEnabler {
     		return true;
     	else
     		return false;
+    }
+    
+    private void setBehavior(String new_behavior){
+    	LOG.info("Updating behavior to "+new_behavior+" by broker \n");
+    	Behavior = new_behavior;
     }
 }

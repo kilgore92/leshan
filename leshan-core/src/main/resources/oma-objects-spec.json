@@ -2561,10 +2561,10 @@
         "units": "",
         "description": "Y-coordinate of light device"
       },
-      {
+      { 
         "id": 10,
         "name": "Room ID",
-        "operations": "R",
+        "operations": "RW",
         "instancetype": "single",
         "mandatory": true,
         "type": "string",
@@ -2575,7 +2575,7 @@
       {
         "id": 11,
         "name": "Behavior Deployment",
-        "operations": "R",
+        "operations": "RW",
         "instancetype": "single",
         "mandatory": true,
         "type": "string",
