@@ -19,18 +19,25 @@ import org.eclipse.leshan.core.response.WriteResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("unused")
 public class MyLight extends BaseInstanceEnabler {
 
     private static final Logger LOG = LoggerFactory.getLogger(MyLight.class);
     
-    private int groupID = -1; // Initialize via a set statement
-    private String roomID = "0"; // Initial value
+    private int groupID = -1; // Initialized by the broker during identity binding
+    private String roomID = "0"; // Initialized by the broker during identity binding
+    private String userID; // Fetched from JSON or updated by Broker
+    private String userType; // Fetched from JSON or updated by Broker
+    private String lightState = "FREE"; // Updated based on sensor MQTT feed or programmed by broker
+    private boolean lowLight = false; // Updated based on JSON or programmed by broker
+    private String lightID = "bla bla"; // TODO : INITIALIZE IN CLASSROOM
+    
     private double XLocation = -1.0;
     private double YLocation = -1.0;
     private String RGB; // Used to pass color settings to RasPi
     private String Behavior = "Broker"; // Determines behavior (programmed via setter method by broker)
     private TCPListener tcpServer;
+    private String dimSetting = "50,50,50"; // For FREE State
+    private String fetchJSON; // URL to fetch the JSON file and parse
     
     public MyLight() {
     	tcpServer = new TCPListener(this);
@@ -111,6 +118,15 @@ public class MyLight extends BaseInstanceEnabler {
         case 11:
         	setBehavior((String)value.getValue());
         	return WriteResponse.success();
+        case 7:
+        	setGroupID((int)value.getValue());
+        	return WriteResponse.success();
+        case 10:
+        	setRoomID((String)value.getValue());
+        	return WriteResponse.success();
+        case 12:
+        	setOwnershipPriority((String)value.getValue());
+        	return WriteResponse.success();
         default:
             return super.write(resourceid, value);
         }
@@ -118,7 +134,7 @@ public class MyLight extends BaseInstanceEnabler {
 
     // Getter Functions
     private String getLightId() {
-        return "Not implemented yet, Id = 0";
+        return lightID;
     }
 
     private String getDeviceType() {
@@ -126,15 +142,15 @@ public class MyLight extends BaseInstanceEnabler {
     }
 
     private String getLightState() {
-        return "Will return USED or FREE (based on pl) TODO";
+        return lightState;
     }
 
     private String getUserType() {
-        return "Returns USER 1";
+        return userType;
     }
 
     private String getUserId() {
-        return "Return ID of User";
+        return userID;
     }
 
     private String getRGB() {
@@ -142,7 +158,7 @@ public class MyLight extends BaseInstanceEnabler {
     }
     
     private boolean getLightStatus(){
-    	return true;
+    	return lowLight;
     }
     
     private int getGroup() {
@@ -191,5 +207,29 @@ public class MyLight extends BaseInstanceEnabler {
     private void setBehavior(String new_behavior){
     	LOG.info("Updating behavior to "+new_behavior+" by broker \n");
     	Behavior = new_behavior;
+    }
+    
+    public void MQTTHandler(String sensorStatus) {
+    	if (sensorStatus.equals("USED")) {
+    		this.setRGB("255,255,255"); // Change this, get value from JSON spec file
+    	}
+    	else if (sensorStatus.equals("FREE")) {
+    		this.setRGB(dimSetting);
+    	}
+    }
+    
+    private void setGroupID(int new_groupID) {
+    	LOG.info("Updating groupID to "+new_groupID);
+    	groupID = new_groupID;
+    }
+    
+    private void setRoomID(String new_roomID) {
+    	LOG.info("Updating roomID to "+new_roomID);
+    	roomID = new_roomID;
+    }
+    
+    private void setOwnershipPriority(String json_url) {
+    	fetchJSON = json_url;
+    	// Fetch and process JSON
     }
 }

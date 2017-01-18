@@ -2582,7 +2582,18 @@
         "range": "",
         "units": "",
         "description": "Used to get/set deployment behavior"
-      }  
+      },
+      {
+        "id": 12,
+        "name": "Ownership priority",
+        "operations": "RW",
+        "instancetype": "single",
+        "mandatory": true,
+        "type": "string",
+        "range": "",
+        "units": "",
+        "description": "Used to write the URL to the JSON script used to determine ownership"
+      } 
     ]
   },
   
