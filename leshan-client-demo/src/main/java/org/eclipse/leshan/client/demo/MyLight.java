@@ -124,8 +124,14 @@ public class MyLight extends BaseInstanceEnabler {
         case 10:
         	setRoomID((String)value.getValue());
         	return WriteResponse.success();
+        case 6:
+        	setLowLight((boolean)value.getValue());
+        	return WriteResponse.success();
         case 12:
         	setOwnershipPriority((String)value.getValue());
+        	return WriteResponse.success();
+        case 4:
+        	setUserID((String)value.getValue());
         	return WriteResponse.success();
         default:
             return super.write(resourceid, value);
@@ -231,5 +237,14 @@ public class MyLight extends BaseInstanceEnabler {
     private void setOwnershipPriority(String json_url) {
     	fetchJSON = json_url;
     	// Fetch and process JSON
+    }
+    
+    private void setUserID(String new_userID) {
+    	LOG.info("Updating userID to "+new_userID);
+    	userID = new_userID;
+    }
+    
+    private void setLowLight(boolean new_lightStatus) {
+    	lowLight = new_lightStatus;
     }
 }
