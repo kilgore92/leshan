@@ -4,7 +4,11 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TCPListener implements Runnable {
+	private static final Logger LOG = LoggerFactory.getLogger(TCPListener.class);
 	private Thread tcpServer;
 	@SuppressWarnings("unused")
 	private MyLight controllingLight; // Need this object reference to call it's methods
@@ -15,6 +19,7 @@ public class TCPListener implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		LOG.info("Starting to listen...");
 		try {
 			ServerSocket listener = new ServerSocket(9091);
 			try {
@@ -30,7 +35,7 @@ public class TCPListener implements Runnable {
 		        }
 		    }
 			catch (Exception e){
-				System.out.println("Error here");
+				LOG.error("Error here");
 			}
 			
 		    finally {
@@ -39,7 +44,7 @@ public class TCPListener implements Runnable {
 		} 
 			catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error here!!!!");
+				LOG.error("Error here!!!!");
 		}
 		
 	}
@@ -50,12 +55,12 @@ public class TCPListener implements Runnable {
 	}
 	
 	public void start() {
-		System.out.println("Trying to start the TCP server...");
+		LOG.info("Trying to start the TCP server...");
 		if (tcpServer == null) {
 				tcpServer = new Thread(this);
 		}
 		else {
-			System.out.println("Error! The server was started already...");
+			LOG.info("Error! The server was started already...");
 		}
 		
 	}
