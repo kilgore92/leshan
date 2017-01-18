@@ -13,6 +13,7 @@ public class TCPListener implements Runnable {
 	@SuppressWarnings("unused")
 	private MyLight controllingLight; // Need this object reference to call it's methods
 	public TCPListener(MyLight myLight) {
+		LOG.info("Creating listener class");
 		this.controllingLight = myLight;
 	}
 	
@@ -26,9 +27,15 @@ public class TCPListener implements Runnable {
 		        while (true) {
 		            Socket socket = listener.accept();
 		            try {
+		            	// TODO : Accept current status from MQTT client script
+		            	// Access the myLight object and
+		            	// 1. Get the latest R,G,B via the getter methods (if FREE->USED)
+		            	// 2. If USED->FREE init R,G,B with "low light" values
+		            	// 3. Call the setRGB function with the RGB values
+		            	
 		            	// TODO remove these 2 lines and call methods on MyLight
-		                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-		                out.println(new Date().toString());
+		                //PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+		                //out.println(new Date().toString());
 		            } finally {
 		                socket.close();
 		            }
@@ -57,7 +64,9 @@ public class TCPListener implements Runnable {
 	public void start() {
 		LOG.info("Trying to start the TCP server...");
 		if (tcpServer == null) {
+				LOG.info("Starting TCP Server for MQTT communication");
 				tcpServer = new Thread(this);
+				tcpServer.start();
 		}
 		else {
 			LOG.info("Error! The server was started already...");
