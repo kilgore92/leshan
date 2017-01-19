@@ -1,6 +1,13 @@
 package org.eclipse.leshan.client.demo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -14,6 +21,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.californium.scandium.util.Base64.InputStream;
 import org.eclipse.leshan.client.resource.BaseInstanceEnabler;
 import org.eclipse.leshan.core.model.ResourceModel.Type;
 import org.eclipse.leshan.core.node.LwM2mResource;
@@ -229,7 +237,7 @@ public class MyLight extends BaseInstanceEnabler {
     
     public void MQTTHandler(String sensorStatus) {
     	if (sensorStatus.equals("OCCUPIED")) {
-    		this.setRGB(userRGB); // Change this, get value from JSON spec file
+    		this.setRGB(userRGB);
     	}
     	else if (sensorStatus.equals("FREE")) {
     		this.setRGB(dimSetting);
@@ -246,11 +254,36 @@ public class MyLight extends BaseInstanceEnabler {
     	roomID = new_roomID;
     }
     
-    private void setOwnershipPriority(String json_url) {
+    @SuppressWarnings("unused")
+	private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+          sb.append((char) cp);
+        }
+        return sb.toString();
+      }
+    
+	private void setOwnershipPriority(String json_url) {
     	fetchJSON = json_url;
     	// Code to fetch file hosted on HTTP
-    	 // JSONArray a = (JSONArray) parser.parse(new FileReader("c:\\exer4-courses.json"));
-    	// Fetch and process JSON
+/*
+    	InputStream is;
+		
+    	try {
+			is = (InputStream) new URL(json_url).openStream();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			String json_content = readAll(rd);
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+*/
+                
+    	// TODO : Activate the HTTP reading 
     	try {
 			String json_content = new String(Files.readAllBytes(Paths.get("/home/pi/example.json")));
 			JSONArray arr = new JSONArray(json_content);
