@@ -1,6 +1,10 @@
 package org.eclipse.leshan.client.demo;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +23,11 @@ import org.eclipse.leshan.core.response.WriteResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+
+
 public class MyLight extends BaseInstanceEnabler {
 
     private static final Logger LOG = LoggerFactory.getLogger(MyLight.class);
@@ -34,10 +43,13 @@ public class MyLight extends BaseInstanceEnabler {
     private double XLocation = -1.0;
     private double YLocation = -1.0;
     private String RGB; // Used to pass color settings to RasPi
-    private String Behavior = "Broker"; // Determines behavior (programmed via setter method by broker)
+    private String Behavior = "Distributed"; // Determines behavior (programmed via setter method by broker)
     private TCPListener tcpServer;
     private String dimSetting = "50,50,50"; // For FREE State
     private String fetchJSON; // URL to fetch the JSON file and parse
+    
+    // Values from JSON File
+    private String userRGB;
     
     public MyLight() {
     	tcpServer = new TCPListener(this);
@@ -216,8 +228,8 @@ public class MyLight extends BaseInstanceEnabler {
     }
     
     public void MQTTHandler(String sensorStatus) {
-    	if (sensorStatus.equals("USED")) {
-    		this.setRGB("255,255,255"); // Change this, get value from JSON spec file
+    	if (sensorStatus.equals("OCCUPIED")) {
+    		this.setRGB(userRGB); // Change this, get value from JSON spec file
     	}
     	else if (sensorStatus.equals("FREE")) {
     		this.setRGB(dimSetting);
@@ -236,7 +248,31 @@ public class MyLight extends BaseInstanceEnabler {
     
     private void setOwnershipPriority(String json_url) {
     	fetchJSON = json_url;
+    	// Code to fetch file hosted on HTTP
+    	 // JSONArray a = (JSONArray) parser.parse(new FileReader("c:\\exer4-courses.json"));
     	// Fetch and process JSON
+    	try {
+			String json_content = new String(Files.readAllBytes(Paths.get("/home/pi/example.json")));
+			JSONArray arr = new JSONArray(json_content);
+			JSONObject obj;
+			for (int i = 0; i < arr.length(); i++) {
+				obj = arr.getJSONObject(i);
+				int json_location_x = obj.getInt("user_location_x");
+				int json_location_y = obj.getInt("user_location_y");
+				if (json_location_x == (int)XLocation && json_location_y == (int)YLocation) {
+					userRGB = obj.getString("light_color");
+					userType = obj.getString("user_type");
+					userID = obj.getString("user_id");
+					lowLight = obj.getBoolean("low_light");
+				}
+				
+			}
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     private void setUserID(String new_userID) {
