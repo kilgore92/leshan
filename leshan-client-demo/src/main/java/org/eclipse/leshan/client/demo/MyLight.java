@@ -265,6 +265,7 @@ public class MyLight extends BaseInstanceEnabler {
       }
     
 	private void setOwnershipPriority(String json_url) {
+		LOG.info("Updating JSON url "+json_url);
     	fetchJSON = json_url;
     	// Code to fetch file hosted on HTTP
 /*
@@ -288,6 +289,7 @@ public class MyLight extends BaseInstanceEnabler {
 			String json_content = new String(Files.readAllBytes(Paths.get("/home/pi/example.json")));
 			JSONArray arr = new JSONArray(json_content);
 			JSONObject obj;
+			LOG.info("Starting to parse json file ...");
 			for (int i = 0; i < arr.length(); i++) {
 				obj = arr.getJSONObject(i);
 				int json_location_x = obj.getInt("user_location_x");
@@ -297,6 +299,7 @@ public class MyLight extends BaseInstanceEnabler {
 					userType = obj.getString("user_type");
 					userID = obj.getString("user_id");
 					lowLight = obj.getBoolean("low_light");
+					LOG.info("Updating settings RGB = "+userRGB+" ID = "+"userID = " +userID);
 				}
 				
 			}
@@ -304,6 +307,7 @@ public class MyLight extends BaseInstanceEnabler {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			LOG.error("Parsing failed/File not found");
 			e.printStackTrace();
 		}
     }
